@@ -1,5 +1,10 @@
 //  RECEBER UMA LISTA DE PALAVRAS
 const turingMachine = require('./wordlist.json');
+const readline = require('readline');
+
+//console.log(turingMachine['esportes'].length);
+
+//return Object.keys(turingMachine)[indice];
 
 class HangmanGame {
     #keyWord: string;
@@ -8,10 +13,21 @@ class HangmanGame {
     #charSet = new Set<string>();
 
     constructor() {
-        this.#keyWord = 'futebol';
-        this.#category = 'esportes';
+        this.#category = this.randomIndexCategory(turingMachine);
+        this.#keyWord = this.randomIndexKeyword(turingMachine);
     }
 
+    public randomIndexCategory(turingMachine: any) {
+        const max = Object.keys(turingMachine).length;
+        const indice = Math.floor(Math.random() * max);
+        console.log(Object.keys(turingMachine)[indice]);
+        return Object.keys(turingMachine)[indice];
+    }
+    public randomIndexKeyword(turingMachine: any) {
+        const max = turingMachine[this.category].length;
+        const indice = Math.floor(Math.random() * max);
+        return turingMachine[this.category][indice];
+    }
     public wordGuessToString(): string {
         for (let i = 0; i < this.#keyWord.length; i++) {
             if (this.#keyWord[i] == ' ') {
@@ -39,10 +55,19 @@ class HangmanGame {
 
     // JOGO DA FORCA
 
-    public playGameWithComputer(computer: ComputerPlayer, human: HumanPlayer): string {
+
+    public generateScoreboard(player1: HumanPlayer, player2: ComputerPlayer | HumanPlayer): void {
+        console.log(`HUMANO: ${player1._hp}`);
+        console.log(`${player1.wordGuess}`);
+        console.log(`COMPUTADOR: ${player2._hp}`);
+        console.log(`${player2.wordGuess}`);
+    }
+
+    public playGameWithComputer(computer: ComputerPlayer, human: HumanPlayer): void {
         computer.wordGuess = this.wordGuessToString();
+        human.wordGuess = this.wordGuessToString();
         const guessLetters = computer.generateWords(this.category, this.keyWord, this.#charSet);
-        while ((guessLetters.length > 0 && computer._hp != 0 && computer.wordGuess != this.keyWord)){
+        while ((guessLetters.length > 0 && computer._hp != 0 && computer.wordGuess != this.keyWord)) {
             const guess = computer.computerChooseLetter(guessLetters);
             guessLetters.splice(guessLetters.indexOf(guess), 1);
             let occour = false;
@@ -54,8 +79,7 @@ class HangmanGame {
             }
             if (!occour) computer._hp--;
         }
-
-        return computer.wordGuess == this.keyWord ? `${computer.wordGuess}` : `${this.keyWord}`;
+        return this.generateScoreboard(human, computer);
 
         function replaceChar(string: string, index: number, replacement: string) {
             return (
@@ -83,6 +107,7 @@ class Player {
 
 
 class HumanPlayer extends Player {
+   
 }
 
 
@@ -120,4 +145,24 @@ const newGame = new HangmanGame();
 const turing = new ComputerPlayer(undefined, '');
 const player = new HumanPlayer(undefined, '');
 
-console.log(newGame.playGameWithComputer(turing, player));
+newGame.playGameWithComputer(turing, player);
+
+/*
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+rl.question('Is this example useful? [y/n] ', (answer: string) => {
+    switch (answer.toLowerCase()) {
+        case 'y':
+            console.log('Super!');
+            break;
+        case 'n':
+            console.log('Sorry! :(');
+            break;
+        default:
+            console.log('Invalid answer!');
+    }
+    rl.close();
+}); */
