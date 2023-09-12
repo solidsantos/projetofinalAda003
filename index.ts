@@ -20,7 +20,6 @@ class HangmanGame {
     public randomIndexCategory(turingMachine: any) {
         const max = Object.keys(turingMachine).length;
         const indice = Math.floor(Math.random() * max);
-        console.log(Object.keys(turingMachine)[indice]);
         return Object.keys(turingMachine)[indice];
     }
     public randomIndexKeyword(turingMachine: any) {
@@ -55,12 +54,19 @@ class HangmanGame {
 
     // JOGO DA FORCA
 
-
-    public generateScoreboard(player1: HumanPlayer, player2: ComputerPlayer | HumanPlayer): void {
-        console.log(`HUMANO: ${player1._hp}`);
-        console.log(`${player1.wordGuess}`);
-        console.log(`COMPUTADOR: ${player2._hp}`);
-        console.log(`${player2.wordGuess}`);
+    public generateScoreboard(player1: HumanPlayer, player2: ComputerPlayer | HumanPlayer, category: string): void {
+        console.log('----------------------------');
+        console.log('|----P--L--A--C--A--R-----');
+        console.log('|--------------------------');
+        console.log(`|  CATEGORIA: ${category}`);
+        console.log('|--------------------------');
+        console.log(`|  JOGADOR 1 (HUMANO): ${player1._hp}`);
+        console.log(`|  ${player1.wordGuess}`);
+        console.log(`|  JOGADOR 2 (COMPUTADOR): ${player2._hp}`);
+        console.log(`|  ${player2.wordGuess}`);
+        console.log('|--------------------------');
+        console.log(player1._score > player2._score ? `|    JOGADOR 1 GANHOU!` : (player1._score == player2._score) ? '| EMPATE!' : '|   JOGADOR 2 GANHOU!');
+        console.log('|--------------------------');
     }
 
     public playGameWithComputer(computer: ComputerPlayer, human: HumanPlayer): void {
@@ -75,11 +81,12 @@ class HangmanGame {
                 if (this.keyWord[i] == guess) {
                     computer.wordGuess = replaceChar(computer.wordGuess, i, guess);
                     occour = true;
+                    computer._score++;
                 }
             }
             if (!occour) computer._hp--;
         }
-        return this.generateScoreboard(human, computer);
+        return this.generateScoreboard(human, computer, this.category);
 
         function replaceChar(string: string, index: number, replacement: string) {
             return (
@@ -91,10 +98,12 @@ class HangmanGame {
 
 class Player {
     _hp: number;
+    _score: number;
     #wordGuess: string;
-    constructor(hp = 6, wordGuess: string) {
+    constructor(hp = 6, wordGuess: string, score = 0) {
         this._hp = hp;
         this.#wordGuess = wordGuess;
+        this._score = score;
     }
 
     public set wordGuess(wordGuess: string) {
