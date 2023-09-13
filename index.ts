@@ -1,6 +1,7 @@
 //  RECEBER UMA LISTA DE PALAVRAS
 const turingMachine = require('./wordlist.json');
 const readline = require('readline');
+const input = require('prompt-sync')();
 
 //console.log(turingMachine['esportes'].length);
 
@@ -85,6 +86,25 @@ class HangmanGame {
                 }
             }
             if (!occour) computer._hp--;
+
+
+        }
+        while ((human._hp != 0 && human.wordGuess != this.keyWord)) {
+            console.log(`CATEGORIA: ${this.category}\n`);
+            console.log(`NÚMERO DE LETRAS: ${this.keyWord.length}\n`);
+            console.log(`TENTATIVA RESTANTES: ${human._hp}\n`);
+            const guessPlayer = input('Qual o seu palpite: ')[0];
+            let occour = false;
+            for (let i = 0; i < this.keyWord.length; i++) {
+                if (this.keyWord[i] == guessPlayer) {
+                    human.wordGuess = replaceChar(human.wordGuess, i, guessPlayer);
+                    occour = true;
+                    human._score++;
+                }
+            }
+            if (!occour) human._hp--;
+
+            console.log(`${human.wordGuess}\n`);
         }
         return this.generateScoreboard(human, computer, this.category);
 
@@ -116,7 +136,17 @@ class Player {
 
 
 class HumanPlayer extends Player {
-   
+    public playerInputGuessWord() {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        function value(answer: string) {
+            let wordGuess;
+            wordGuess = answer;
+            console.log(wordGuess);
+        }
+    }
 }
 
 
@@ -149,29 +179,8 @@ class ComputerPlayer extends Player {
 
 
 }
-
 const newGame = new HangmanGame();
 const turing = new ComputerPlayer(undefined, '');
 const player = new HumanPlayer(undefined, '');
 
 newGame.playGameWithComputer(turing, player);
-
-/*
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
-rl.question('Is this example useful? [y/n] ', (answer: string) => {
-    switch (answer.toLowerCase()) {
-        case 'y':
-            console.log('Super!');
-            break;
-        case 'n':
-            console.log('Sorry! :(');
-            break;
-        default:
-            console.log('Invalid answer!');
-    }
-    rl.close();
-}); */
